@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.SalesDao">
+
+	<sql id="saleInfColumnNoTime">
+		sales_num,sales_size,sales_price,sales_payType,discount_id,p_id
+	</sql>
+
+	<!-- insert -->
+	<!-- public int addSaleInf(SaleInf saleInf); -->
+	<insert id="addSaleInf" parameterType="com.cc.pms.bean.SaleInf">
+		insert into tb_sales(<include refid="saleInfColumnNoTime"/>)
+		values(#{salesNum},#{salesSize},#{salesPrice},#{salesPayType},#{discountId},#{pId})
+	</insert>
+	
+
+	<!-- select -->
+	<!-- public List<SaleInf> selectSaleInfByCondition(Map<String,Object> searchMap); -->
+	<resultMap type="com.cc.pms.bean.SaleInf" id="SalesMap">
+		<id column="sales_id" jdbcType="INTEGER" property="salesId" />
+		<result column="sales_size" jdbcType="INTEGER" property="salesSize" />
+		<result column="sales_time" jdbcType="DATE" property="salesTime" />
+	</resultMap>
+	<select id="selectSaleInfByCondition" parameterType="map" resultMap="SalesMap">
+		select * from tb_sales s
+		where s.sales_time  &gt;= #{params.startTime} and s.sales_time &lt;= #{params.endTime}
+			
+	</select>
+	
+	<!-- public List<Integer> getSelectProductSalesSize(Integer productId); -->
+	<select id="getSelectProductSalesSize" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select sales_size from tb_sales where p_id=#{productId}
+	</select>
+	
+	<!-- public List<SaleInf> getSelectProductSaleInf(Integer productId); -->
+	<resultMap type="com.cc.pms.bean.SaleInf" id="SalesMap2">
+		<id column="sales_id" jdbcType="INTEGER" property="salesId" />
+		<result column="sales_size" jdbcType="INTEGER" property="salesSize" />
+		<result column="sales_time" jdbcType="DATE" property="salesTime" />
+		<result column="sales_num" jdbcType="INTEGER" property="salesNum" />
+		<result column="sales_price" jdbcType="FLOAT" property="salesPrice" />
+		<result column="product_id" property="product.productId"/>
+		<result column="product_name" property="product.productName"/>	
+		<result column="product_area" property="product.productArea"/>	
+	</resultMap>
+	<select id="getSelectProductSaleInf" parameterType="java.lang.Integer" resultMap="SalesMap2">
+		select s.sales_id,s.sales_size,s.sales_time,s.sales_num,s.sales_price,p.product_id,p.product_name,p.product_area
+		from tb_sales s
+		right join tb_product p
+		on p.product_id=s.p_id 
+		where p.product_id=#{prodcutId}  
+	</select>
+	
+	<!-- public List<SaleInf> getAllSaleInf(); -->
+	<resultMap type="com.cc.pms.bean.SaleInf" id="SalesMap3">
+		<id column="sales_id" jdbcType="INTEGER" property="salesId" />
+		<result column="sales_size" jdbcType="INTEGER" property="salesSize" />
+		<result column="sales_time" jdbcType="DATE" property="salesTime" />
+		<result column="sales_num" jdbcType="INTEGER" property="salesNum" />
+		<result column="sales_price" jdbcType="FLOAT" property="salesPrice" />
+		<association property="product" javaType="com.cc.pms.bean.Product">
+			<id column="product_id" property="productId"/>
+			<result column="product_name" property="productName"/>	
+		</association>
+	</resultMap>
+	<select id="getAllSaleInf" resultMap="SalesMap3">
+		select s.sales_id,s.sales_size,s.sales_time,s.sales_num,s.sales_price,p.product_id,p.product_name
+		from tb_sales s,tb_product p
+		where s.p_id=p.product_id 
+	</select>
+	
+	<!-- public SaleInf getSelectProductSaleInfBySalesId(Integer salesId); -->
+	<select id="getSelectProductSaleInfBySalesId" resultType="com.cc.pms.bean.SaleInf">
+		select *
+		from tb_sales s
+		where s.sales_id=#{salesId}
+	</select>
+	
+	<!-- public List<DailyData> getDailyDataByProductId(Integer productId); -->
+	<resultMap type="com.cc.pms.bean.DailyData" id="DailyDataMap">
+		<id column="sales_id" jdbcType="INTEGER" property="salesId" />
+		<result column="sales_size" jdbcType="INTEGER" property="salesSize" />
+		<result column="sales_time" jdbcType="DATE" property="salesTime" />
+		<result column="sales_price" jdbcType="FLOAT" property="salesPrice" />
+		<result column="inbound_cost" jdbcType="FLOAT" property="inboundCost" />
+		<result column="inventory_size" jdbcType="INTEGER" property="inventorySize" />
+	</resultMap>
+	<select id="getDailyDataByProductId" resultMap="DailyDataMap">
+		select s.sales_price,s.sales_size,s.sales_time,i.inbound_cost,v.inventory_size
+		from tb_sales s
+		left join tb_inbound i
+		on s.p_id=i.product_id and s.sales_time=i.inbound_time
+		left join tb_inventory v
+		on s.p_id=v.product_id and s.sales_time=v.inventory_time
+		where s.p_id=#{prodcutId}
+	
+	</select>
+	
+	<!-- public Integer updateSaleInf(SaleInf saleInf); -->
+	<update id="updateSaleInf" parameterType="com.cc.pms.bean.SaleInf">
+		update tb_sales
+		<set>
+			<if test="salesSize!=null and salesSize!=''">
+				sales_size=#{salesSize},
+			</if>
+			<if test="salesNum!=null and salesNum!=''">
+				sales_num=#{salesNum},
+			</if>
+			<if test="salesTime!=null and salesTime!=''">
+				sales_time=#{salesTime},
+			</if>
+			<if test="salesPrice!=null and salesPrice!=''">
+				sales_price=#{salesPrice},
+			</if>
+		</set>
+		where sales_id=#{salesId} 
+	</update>
+
+
+</mapper>

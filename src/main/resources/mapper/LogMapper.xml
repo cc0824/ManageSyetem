@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.LogDao">
+	<sql id="sql_columns">
+		log_operatorname,log_operatorrole,log_operatedesc,log_operatedate,
+		log_operateresult,log_ip,log_operatemethod,log_operateparams,log_operateexpdetail
+	</sql>
+	
+
+	<!-- public List<LogMessage> getAllLogMessage(); -->
+	<select id="getAllLogMessage" resultMap="LogMap">
+		select log_id,<include refid="sql_columns"/>
+		from tb_log
+	</select>
+	<resultMap id="LogMap" type="com.cc.pms.bean.LogMessage">
+		<id column="log_id" jdbcType="INTEGER" property="id" />
+		<result column="log_operatorname" jdbcType="VARCHAR" property="operatorName" />
+		<result column="log_operatorrole" jdbcType="VARCHAR" property="operatorRole" />
+		<result column="log_operatedesc" jdbcType="VARCHAR" property="operateDesc" />
+		<result column="log_operatedate" jdbcType="VARCHAR" property="operateDate" />
+		<result column="log_operateresult" jdbcType="VARCHAR" property="operateResult" />
+		<result column="log_ip" jdbcType="VARCHAR" property="ip" />
+		<result column="log_operatemethod" jdbcType="VARCHAR" property="operateMethod" />
+		<result column="log_operateparams" jdbcType="VARCHAR" property="operateParams" />
+		<result column="log_operateexpdetail" jdbcType="VARCHAR" property="operateExpDetail" />
+	</resultMap>
+	
+	<!-- public List<LogMessage> getLogBySelect(LogMessage logMessage); -->
+	<select id="getLogBySelect" resultMap="LogMap">
+		select log_id,<include refid="sql_columns"/>
+		from tb_log
+		<where>
+			<if test="id!=null and id!=''">
+				log_id=#{id}
+			</if>
+			<if test="operatorName!=null and operatorName!=''">
+				and log_operatorname=#{operatorName}
+			</if>
+			<if test="operatorRole!=null and operatorRole!=''">
+				and log_operatorrole=#{operatorRole}
+			</if>
+			<if test="operateDesc!=null and operateDesc!=''">
+				and log_operatedesc=#{operateDesc}
+			</if>
+			<if test="operateDate!=null and operateDate!=''">
+				and log_operatedate<![CDATA[ >= ]]>SUBSTRING(#{operateDate},1,CHARINDEX('+',#{operateDate})-1 )
+				and log_operatedate<![CDATA[ <= ]]>SUBSTRING(#{operateDate},CHARINDEX( '+',#{operateDate})+1,10 )
+			</if>
+			<if test="operateResult!=null and operateResult!=''">
+				and log_operateresult=#{operateResult}
+			</if>
+			<if test="ip!=null and ip!=''">
+				and log_ip=#{ip}
+			</if>
+			<if test="operateMethod!=null and operateMethod!=''">
+				and log_operatemethod=#{operateMethod}
+			</if>
+			<if test="operateParams!=null and operateParams!=''">
+				and log_operateparams=#{operateParams}
+			</if>
+			<if test="operateExpDetail!=null and operateExpDetail!=''">
+				and log_operateexpdetail=#{operateExpDetail}
+			</if>
+		</where>
+	</select>
+	
+	<sql id="sql_columns_key">
+		<trim suffixOverrides=",">
+				<if test='operatorName!=null'>
+					log_operatorname,
+				</if>
+				<if test="operatorRole!=null">
+					log_operatorrole,
+				</if>
+				<if test='operateDesc!=null'>
+					log_operatedesc,
+				</if>
+				<if test='operateDate!=null'>
+					log_operatedate,
+				</if>
+				<if test='operateResult!=null'>
+					log_operateresult,
+				</if>
+				<if test='ip!=null'>
+					log_ip,
+				</if>
+				<if test='operateMethod!=null'>
+					log_operatemethod,
+				</if>
+				<if test='operateParams!=null'>
+					log_operateparams,
+				</if>
+				<if test='operateExpDetail!=null'>
+					log_operateexpdetail,
+				</if>
+			</trim>
+	</sql>
+	<insert id="addLog" parameterType="com.cc.pms.bean.LogMessage">
+		insert into tb_log(<include refid="sql_columns_key"/>)
+		values(
+			<trim suffixOverrides=",">
+				<if test='operatorName!=null'>
+					#{operatorName},
+				</if>
+				<if test="operatorRole!=null">
+					#{operatorRole},
+				</if>
+				<if test='operateDesc!=null'>
+					#{operateDesc},
+				</if>
+				<if test='operateDate!=null'>
+					#{operateDate},
+				</if>
+				<if test='operateResult!=null'>
+					#{operateResult},
+				</if>
+				<if test='ip!=null'>
+					#{ip},
+				</if>
+				<if test='operateMethod!=null'>
+					#{operateMethod},
+				</if>
+				<if test='operateParams!=null'>
+					#{operateParams},
+				</if>
+				<if test='operateExpDetail!=null'>
+					#{operateExpDetail},
+				</if>
+			</trim>
+		);
+	</insert>
+	
+	
+</mapper>

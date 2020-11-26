@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	
+	<!--=======================================================-->
+	<!--================ web工程初始化配置信息 ==================-->
+	<!--=======================================================-->
+	
+	
+	<!--  3.0以后才有absolute-ordering，用来扫描架包，写为空，表示不扫描任何架包，提升启动速度  
+	元素直接指定了哪些 JAR 包需要扫描 web fragment(在 WEB-INF/web-fragment.xml文件中指定), 包括 SCI, fragment 以及 annotation.-->
+	<absolute-ordering/>
+
+	 <welcome-file-list>
+		<welcome-file>login.jsp</welcome-file>
+	</welcome-file-list> 
+	
+	<!--1、启动Spring的容器 -->
+	<!-- needed for ContextLoaderListener -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:/applicationContext.xml</param-value>
+	</context-param>
+
+	<!-- spring监听器 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!--2、springmvc的前端控制器，拦截所有请求 -->
+	<!--配置方法：1、在init-param属性中定义springmvc配置文件位置 -->
+	<!--配置方法：2、不指定则要在与web.xml同级的目录下创建当前servelt名-servlet.xml文件 -->
+	<!-- The front controller of this Spring Web application, responsible for 
+		handling all application requests -->
+	<servlet>
+		<servlet-name>dispatcherServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:springmvc.xml</param-value>
+		</init-param>
+		<!-- 容器在启动时就加载这个servlet -->
+		<load-on-startup>1</load-on-startup>
+		<!-- 为每个servlet和filter添加异步支持 -->
+    	<async-supported>true</async-supported>
+	</servlet>
+
+	<!-- DispatcherServlet拦截并处理所有url请求（包括静态资源），并将其发送给对应controller -->
+	<servlet-mapping>
+		<servlet-name>dispatcherServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<!-- 自定义servlet，拦截do方法 -->
+	<servlet-mapping>
+		<servlet-name>dispatcherServlet</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+
+	<!-- 3、字符编码过滤器，一定要放在所有过滤器之前 -->
+	<filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    	<!-- 为每个servlet和filter添加异步支持 -->
+    	<async-supported>true</async-supported>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>utf-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceRequestEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceResponseEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+
+	<!-- 4、使用Restful风格的API，将页面普通的post请求转为指定的delete或者put请求 -->
+	<!-- RESTful 的核心思想就是，客户端发出的数据操作指令都是"动词 + 宾语"的结构 -->
+	<!-- 对指定uri 在@RequestMapping注解中指定method=RequestMethod.POST-->
+	<!-- 在Ajax中，采用Restful风格PUT和DELETE请求传递参数无效，传递到后台的参数值为null
+		原因：Tomcat将只有POST形式的请求才将请求体中的数据，封装成一个map，SpringMvc封装POJO对象的时候，会把POJO中每个属性的值进行request.getParamter();
+		解决方案：   
+		1、 能支持直接发送PUT之类请求还要封装请求体中的数据，但是不支持DELETE
+			在web.xml中配置上HttpPutFormContentFilter,
+			原理：将请求体中的数据解析包装成一个map，request被重新包装，request.getParameter()被重写，就会从自己封装的map中取数据
+			弊端：仅仅适合表单对象信息的传参，如果是单个信息数据不通过表单，例如，简单传入一个id，来更新特定数据就发现还是无法传参
+			写法：ajax中 type:"PUT" 
+		2、在web.xml中配置HiddenHttpMethodFilter
+			原理： 在Aajx中发送post请求后，带_method参数，将其修改为PUT，或者DELETE请求
+			写法:	1)type:"POST",data:{id :id , _method:"PUT/DELETE"},
+				2)在url中加&_method=”PUT”或者&_method=”DELETE”	
+	-->	
+	<!-- 
+	源码解析：	  
+		tomcat源码文件位置：org.apache.catalina.connector.Request.parseParameters() (3111); 
+		默认请求方式：protected String parseBodyMethods = "POST";
+		if( !getConnector().isParseBodyMethod(getMethod()) ) {success = true;return;}
+	-->
+	<!--用一句话来描述restful api 就是URL定位资源，用HTTP动词（GET,POST,PUT,DELETE)描述操作。
+			下面是正确的restful api用法：
+				GET /blog/Articles 获取所有文章
+				GET /blog/Article/1 获取id为1的文章
+				POST /blog/Articles 添加一篇文章
+				PUT /blog/Articles 修改一篇文章
+				DELETE /blog/Articles/1 删除id为1的文章
+	-->
+	<filter>
+		<filter-name>HiddenHttpMethodFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    	<!-- 为每个servlet和filter添加异步支持 -->
+    	<async-supported>true</async-supported>
+	</filter>
+	<filter-mapping>
+		<filter-name>HiddenHttpMethodFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>HttpPutFormContentFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>HttpPutFormContentFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- 配置登陆检查拦截器LoginFilter -->
+<!-- 	<filter> -->
+<!-- 		<filter-name>LoginFilter</filter-name> -->
+<!-- 		<filter-class>com.cc.pms.component.LoginFilter</filter-class> -->
+<!-- 	</filter> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>LoginFilter</filter-name> -->
+<!-- 		<url-pattern>*.jsp</url-pattern> -->
+<!-- 	</filter-mapping> -->
+	
+</web-app>

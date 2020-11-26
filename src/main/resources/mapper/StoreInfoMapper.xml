@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.StoreInfoDao">
+
+	<!-- 可以实现将查询结果映射为复杂类型的实体类型-->
+	<resultMap id="StoreInfoMap" type="com.cc.pms.bean.StoreInfo">
+		<id column="Id" jdbcType="INTEGER" property="Id" />
+		<result column="store_num" jdbcType="INTEGER" property="storeNum" />
+		<result column="store_name" jdbcType="VARCHAR" property="storeName" />
+		<result column="store_address" jdbcType="VARCHAR" property="storeAddress" />
+		<result column="store_postCode" jdbcType="INTEGER" property="storePostCode" />
+	</resultMap>
+
+	<!-- 定义字段合集，方便后面引用 ,在refid标签里 -->
+	<sql id="StoreInfoColumn">
+		
+	</sql>
+
+	<!-- insert -->
+	<!-- public StoreInfo addNewStoreInfo(StoreInfo storeInfo); -->
+	<insert id="addNewStoreInfo" parameterType="com.cc.pms.bean.StoreInfo"  >
+		insert into tb_storeInfo(store_num,store_name,store_address,store_postCode)
+		values(#{storeNum},#{storeName},#{storeAddress},#{storePostCode})
+	</insert>
+
+
+	<!-- select -->
+	<!-- public List<StoreInfo> getAllStoreInfo(); -->
+	<select id="getAllStoreInfo" resultMap="StoreInfoMap">
+		select * from tb_storeInfo
+	</select>
+	<!-- public StoreInfo getStoreInfoById(Integer id); -->	
+	<select id="getStoreInfoById" resultType="com.cc.pms.bean.StoreInfo">
+		select * from tb_storeInfo
+		where Id=#{Id}
+	</select>
+	
+	
+	<!-- 搜索 -->
+	<!-- public List<StoreInfo> getDataBySearch(String searchData) -->
+	<select id="getDataBySearch" resultType="com.cc.pms.bean.StoreInfo" parameterType="string">
+	 	select * from tb_storeInfo
+	 	where concat(store_num,store_name,store_address,store_postCode) like '%${searchData}%'
+	</select>
+	
+	<!-- 批量删除 -->
+	<!-- public Integer deleteStoreInfoBatch(List<Integer> storeInfoIds); -->
+	<delete id="deleteStoreInfoBatch" parameterType="java.lang.String" >
+    	delete from tb_storeInfo 
+		where store_num in
+        <foreach item="storeInfoIds" collection="list" index="no" open="(" separator="," close=")">
+        	#{storeInfoIds}
+        </foreach> 
+
+  	</delete>
+	<!-- 单个删除 -->
+	<!-- public Integer deleteStoreInfoById(Integer id); -->
+	<delete id="deleteStoreInfoById" parameterType="Integer"> 
+		delete from tb_storeInfo
+		where store_num=#{id}
+        
+	</delete>
+
+	
+
+
+
+
+</mapper>

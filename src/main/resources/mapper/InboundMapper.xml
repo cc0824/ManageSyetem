@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.InboundDao">
+
+	<!-- 定义字段合集，方便后面引用 ,在refid标签里 -->
+	<sql id="inboundColumn">
+		inbound_id,inbound_cost,inbound_size,inbound_total
+	</sql>
+	<!-- 查到InboundFlag=0的数据 -->
+	<!-- public List<InboundProduct> getInbooundWithFlag() -->
+	<resultMap id="InboundMap" type="com.cc.pms.bean.InboundProduct">
+		<id column="inbound_id" jdbcType="INTEGER" property="inboundId" />
+		<result column="inbound_cost" jdbcType="FLOAT" property="inboundCost" />
+		<result column="inbound_size" jdbcType="INTEGER" property="inboundSize" />
+		<result column="inbound_total" jdbcType="FLOAT" property="inboundTotal" />
+		<association property="product" javaType="com.cc.pms.bean.Product">
+			<id column="product_id" property="productId"/>
+			<result column="product_name" property="productName"/>	
+		</association>
+	</resultMap>
+	<select id="getInbooundWithFlag" resultMap="InboundMap">
+		select i.inbound_id,p.product_name,i.inbound_size
+		from tb_inbound i,tb_product p
+		where inbound_flag=0 and i.product_id=p.product_id
+	</select>
+	
+	<!-- insert -->
+	<!-- 添加入库信息 -->
+	<!-- public void addInbound(InboundProduct iProduct); -->
+	<insert id="addInbound"  parameterType="com.cc.pms.bean.InboundProduct">
+		insert into tb_inbound(product_id,inbound_cost,inbound_size,inbound_total,inbound_time,inbound_flag)
+		values(#{productId},#{inboundCost},#{inboundSize},#{inboundTotal},#{inboundTime},#{inboundFlag})
+	</insert>
+	
+	<!-- public void updateInbooundFlag(); -->
+	<update id="updateInbooundFlag">
+		update tb_inbound
+		set inbound_flag =1
+		where inbound_flag=0
+	</update>
+	
+	<!-- public void updateMessageIdByFlag(Integer messageId); -->
+	<update id="updateMessageIdByFlag">
+		update i
+		set i.message_id=#{messageId}
+		from tb_inbound i
+		where i.inbound_flag=0
+	</update>
+
+
+
+	
+
+
+
+
+</mapper>

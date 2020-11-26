@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.MessageDao">
+
+	<!-- 可以实现将查询结果映射为复杂类型的实体类型 -->
+	<resultMap id="MessageMap" type="com.cc.pms.bean.MyMessage">
+		<id column="message_id" jdbcType="INTEGER" property="messageId" />
+		<result column="message_fromUser" jdbcType="INTEGER" property="messageFromUser" />
+		<result column="message_toUser" jdbcType="INTEGER" property="messageToUser" />
+		<result column="message_state" jdbcType="INTEGER" property="messageState" />
+		<result column="message_content" jdbcType="VARCHAR" property="messageContent" />
+	</resultMap>
+	<resultMap id="MessageMap2" type="com.cc.pms.bean.MyMessage">
+		<id column="message_id" jdbcType="INTEGER" property="messageId" />
+		<result column="message_fromUser" jdbcType="VARCHAR" property="messageFromUser" />
+		<result column="message_toUser" jdbcType="VARCHAR" property="messageToUser" />
+		<result column="message_state" jdbcType="INTEGER" property="messageState" />
+		<result column="message_content" jdbcType="VARCHAR" property="messageContent" />
+		<result column="message_stateDisplay" jdbcType="INTEGER" property="messageStateDisplay" />
+		<result column="message_type" jdbcType="INTEGER" property="messageType" />
+		<result column="message_time" jdbcType="TIMESTAMP" property="messageTime"/>
+	</resultMap>
+
+	<!-- 定义字段合集，方便后面引用 ,在refid标签里 -->
+	<sql id="messageColumn">
+		Id,message_fromUser,message_toUser,message_state,message_content
+	</sql>
+
+	<!-- insert -->
+	<insert id="addMessage" parameterType="com.cc.pms.bean.MyMessage"  >
+		insert into tb_message(message_fromUser,message_toUser,message_content,message_type)
+		values(#{messageFromUser},#{messageToUser},#{messageContent},#{messageType})
+	</insert>
+	<insert id="addMessage2" parameterType="com.cc.pms.bean.MyMessage"  >
+		insert into tb_message(message_content)
+		values(#{messageContent})
+	</insert>
+	
+	
+	<!-- select -->
+	<select id="getMessage" parameterType="String" resultMap="MessageMap2">
+		select * from tb_message
+		<where>
+        	message_state='0' 
+        	and message_stateDisplay='0' 
+		</where>
+	</select>
+	<!-- public List<MyMessage> getAllInboundMessage(); -->
+	<select id="getAllInboundMessage" resultMap="MessageMap2">
+		select * from tb_message where message_type='1'
+	</select>
+	<!-- public MyMessage getSelectMessageDetail(Integer id); -->
+	<select id="getSelectMessageDetail" resultType="com.cc.pms.bean.MyMessage">
+		select * from tb_message where Id=#{id} 
+	</select>
+	<!-- public MyMessage getLastMessageId(); -->
+	<select id="getLastMessageId" resultType="com.cc.pms.bean.MyMessage">
+		select * from tb_message where message_id= (select max(message_id) from tb_message)
+	</select>
+	<!-- public List<MyMessage> getMessageByUserName(String userName); -->
+	<resultMap id="MessageMap3" type="com.cc.pms.bean.MyMessage">
+		<id column="message_id" jdbcType="INTEGER" property="messageId" />
+		<result column="message_fromUser" jdbcType="VARCHAR" property="messageFromUser" />
+		<result column="message_toUser" jdbcType="VARCHAR" property="messageToUser" />
+		<result column="message_state" jdbcType="INTEGER" property="messageState" />
+		<result column="message_content" jdbcType="VARCHAR" property="messageContent" />
+		<result column="message_stateDisplay" jdbcType="INTEGER" property="messageStateDisplay" />
+		<result column="message_type" jdbcType="INTEGER" property="messageType" />
+		<result column="message_time" jdbcType="TIMESTAMP" property="messageTime"/>
+	</resultMap>
+	<select id="getMessageByUserName" resultMap="MessageMap3">
+		select * from tb_message where message_state=0 and message_toUser=#{userName}
+	</select>
+	
+
+	
+		
+	<!--update -->
+	<!-- public void updateDisplayState(Integer id);  -->
+	<update id="updateDisplayState" >
+		update tb_message
+		<set>
+			message_stateDisplay='1'
+		</set>
+		where Id=#{Id} 
+	</update>
+
+	<!-- delete -->
+	<!-- public void deleteMessageById(Integer id); -->
+	<!-- 单个删除 -->
+	<delete id="deleteMessageById" parameterType="Integer"> 
+		delete from tb_message
+		where Id=#{Id}
+	</delete>
+	<!-- 批量删除 --> 
+	<!-- public void deleteMessageByIds(List<Integer> ids); -->
+	<delete id="deleteMessageByIds" parameterType="java.lang.String" >
+    	delete from tb_message 
+		where Id in
+        <foreach item="ids" collection="list" index="no" open="(" separator="," close=")">
+        	#{ids}
+        </foreach> 
+
+  	</delete>
+	
+
+
+
+
+</mapper>

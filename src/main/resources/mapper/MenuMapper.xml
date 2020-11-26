@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.MenuDao">
+
+
+	<!-- 定义字段合集，方便后面引用 ,在refid标签里 -->
+	<sql id="">
+		
+	</sql>
+
+	<!-- 根据角色查询菜单集合 -->
+	<!-- public List<Menu> getMenuByRoleId(Integer roleId); -->
+	<select id="getMenuByRoleId" parameterType="Integer" resultMap="menuMap">
+		select m.menu_id,m.menu_name,m.menu_state,m.menu_url,m.p_id,m.menu_icon
+	    from tb_role r,tb_menu m,tb_menu_role mr
+	    where r.role_id=mr.role_id and mr.menu_id=m.menu_id and r.role_id=#{role_id}
+	</select>
+	<!-- 1.menu表 -->
+	<!-- 2.menu表与menuRole表  多对一 collection定义关联属性 -->
+	<resultMap id="menuMap" type="com.cc.pms.bean.Menu">
+		<id column="menu_id" jdbcType="INTEGER" property="menuId" />
+		<result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+		<result column="menu_icon" jdbcType="VARCHAR" property="menuIcon" />
+		<result column="menu_state" jdbcType="INTEGER" property="menuState" />
+		<result column="p_id" jdbcType="INTEGER" property="pId" />
+		<result column="menu_url" jdbcType="VARCHAR" property="menuUrl" />
+		<collection property="roleList" ofType="com.cc.pms.bean.Role">
+			<!-- 定义集合中元素的封装规则 -->
+			<id column="role_id"  property="roleId" />
+			<result column="role_name"  property="roleName" />
+		</collection>
+	</resultMap>
+	
+	<!-- 依据pid查询子菜单 -->
+	<!-- public List<Menu> getMenuByParentId(Integer parentId); -->
+	<select id="getMenuByParentId" parameterType="Integer" resultType="com.cc.pms.bean.Menu">
+		select m.menu_id,m.menu_name,m.menu_state,m.menu_url
+	    from tb_menu m
+	    where m.p_id=#{p_id}
+	</select>
+	
+	<!-- public List<Menu> getAllMenus(); -->
+	<select id="getAllMenus" resultType="com.cc.pms.bean.Menu">
+		select m.menu_id,m.menu_name,m.menu_state,m.menu_url
+	    from tb_menu m
+	</select>
+	
+	<!-- public List<Menu> getSearchMenu(String searchData); -->
+	<select id="getSearchMenu" resultType="com.cc.pms.bean.Menu" parameterType="string">
+		select * from tb_menu
+		where menu_name like '%${menuName}%'
+		
+	</select>
+	
+
+		
+		
+		
+
+
+
+
+</mapper>

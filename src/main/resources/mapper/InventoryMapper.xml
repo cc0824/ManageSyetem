@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.InventoryDao">
+
+	<!-- 可以实现将查询结果映射为复杂类型的实体类型-->
+	<resultMap id="InventoryMap" type="com.cc.pms.bean.Inventory">
+		<id column="inventory_id" jdbcType="INTEGER" property="inventoryId" />
+		<result column="inventory_size" jdbcType="INTEGER" property="inventorySize" />
+		<result column="inventory_minsize" jdbcType="INTEGER" property="inventoryMinsize" />
+		<result column="inventory_maxsize" jdbcType="INTEGER" property="inventoryMaxsize" />
+		<result column="inventory_area" jdbcType="VARCHAR" property="inventoryArea" />
+		<result column="inventory_num" jdbcType="INTEGER" property="inventoryNum" />
+		<association property="product" javaType="com.cc.pms.bean.Product">
+			<id column="product_id" property="productId"/>
+			<result column="product_name" property="productName"/>	
+		</association>
+	</resultMap>
+
+	<!-- 定义字段合集，方便后面引用 ,在refid标签里 -->
+	<sql id="inventoryColumn">
+		inventory_id,inventory_size,inventory_minsize,inventory_maxsize,inventory_area,inventory_num
+	</sql>
+	
+	<!--新增库存信息-->
+	<!-- public void addNewInventory(Inventory inventory); -->
+	<insert id="addNewInventory" parameterType="com.cc.pms.bean.Inventory">
+		insert into tb_inventory(inventory_size,inventory_area,product_id) 
+		values(#{inventorySize},#{inventoryArea},#{productId})
+	</insert>
+	
+	<!-- 添加库存变动情况 -->
+	<!-- public void updateInventorySizeById(Integer productId,Integer size) -->
+	<update id="updateInventorySizeById" >
+		update tb_inventory
+		set inventory_size=#{size}+inventory_size 
+		where product_id=#{productId}
+	</update>
+	<!-- 展示所有库存信息 -->
+	<!-- public List<Inventory> getAllInventory(); -->
+	<select id="getAllInventory" resultMap="InventoryMap">
+		select i.inventory_id,i.inventory_size,i.inventory_area,i.inventory_num,p.product_id,p.product_name
+		from tb_inventory i,tb_product p
+		where i.product_id=p.product_id
+	</select>
+
+	<!-- 搜索 -->
+	<!-- public List<Inventory> getDataBySearch(String searchData); -->
+	<!-- concat将多个字符串连接成一个字符串 -->
+	<select id="getDataBySearch" resultMap="InventoryMap" parameterType="string">
+	 	select i.inventory_id,i.inventory_size,i.inventory_area,i.inventory_num,p.product_id,p.product_name 
+	 	from tb_inventory i,tb_product p
+	 	<where>
+	 		concat(i.inventory_id,i.inventory_size,i.inventory_area,i.inventory_num,p.product_name) 
+	 		like '%${searchData}%'
+	 		and
+	 		i.product_id=p.product_id
+	 	</where> 
+	</select>
+	
+	<!-- 判断添加库存信息时商品是否存在 -->	
+	<!-- public List<Product> getExistInventory(String inventoryName) -->
+	<select id="getExistInventory" resultType="com.cc.pms.bean.Product" parameterType="string">
+		select * from tb_product
+		where product_name=#{inventoryName}
+	</select>
+	
+	<!-- public List<CheckItem> getAllCheckProductByCheckSheet(int inventoryCheckId); -->
+	<select id="getAllCheckProductByCheckSheet" resultMap="InventoryCheckMap">
+		select i.inventory_check_item_id,
+			i.inventory_check_product_expected_size,
+			i.inventory_check_product_actual_size,
+			i.inventory_check_id,
+			i.inventory_check_state,
+			p.product_id,
+			p.product_name
+		from tb_inventory_check_item i
+		left join tb_product p
+		on i.inventory_check_product_id=p.product_id
+		where inventory_check_id=#{inventoryCheckId}
+	</select>
+	<resultMap id="InventoryCheckMap" type="com.cc.pms.bean.CheckItem">
+		<id column="inventory_check_item_id" jdbcType="INTEGER" property="inventoryCheckItemId" />
+		<result column="inventory_check_product_expected_size" jdbcType="INTEGER" property="inventoryCheckProductExpectedSize" />
+		<result column="inventory_check_product_actual_size" jdbcType="INTEGER" property="inventoryCheckProductActualSize" />
+		<result column="inventory_check_id" jdbcType="INTEGER" property="inventoryCheckId" />
+		<result column="inventory_check_state" jdbcType="INTEGER" property="inventoryCheckState" />
+		<association property="product" javaType="com.cc.pms.bean.Product">
+			<id column="product_id" property="productId"/>
+			<result column="product_name" property="productName"/>	
+		</association>
+	</resultMap>
+	
+	<!-- public List<CheckItem> getAllCheckInfoByCheckState(int inventoryCheckId,int inventoryCheckState); -->
+	<select id="getAllCheckInfoByCheckState" resultMap="InventoryCheckMap">
+		select i.inventory_check_item_id,
+			i.inventory_check_product_expected_size,
+			i.inventory_check_product_actual_size,
+			i.inventory_check_id,
+			i.inventory_check_state,
+			p.product_id,
+			p.product_name
+		from tb_inventory_check_item i
+		left join tb_product p
+		on i.inventory_check_product_id=p.product_id
+		where inventory_check_id=#{inventoryCheckId} and inventory_check_state=#{inventoryCheckState}
+	</select>
+	
+	
+
+
+	
+
+
+
+
+</mapper>

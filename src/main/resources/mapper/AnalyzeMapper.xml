@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.AnalyzeDao">
+
+	<!-- public void addTreeModel(TreeModel model); -->
+	<insert id="addTreeModel"  parameterType="com.cc.pms.bean.TreeModel">
+		insert into tb_treeModel(treeModel_num,treeModel_path,treeModel_error,treeModel_result)
+		values(#{treeModelNum},#{treeModelPath},#{treeModelError},#{treeModelResult})
+	</insert>
+	
+	<!-- public int insertLSTMModel(LSTMModel model) -->
+	<insert id="insertLSTMModel" parameterType="com.cc.pms.bean.LSTMModel">
+		<!--
+		selectKey  会将 SELECT LAST_INSERT_ID()的结果放入到传入的model的主键里面，
+        	keyProperty 对应的model中的主键的属性名，这里是 user 中的id，因为它跟数据库的主键对应
+            order AFTER 表示 SELECT LAST_INSERT_ID() 在insert执行之后执行,多用与自增主键，
+                  BEFORE 表示 SELECT LAST_INSERT_ID() 在insert执行之前执行，这样的话就拿不到主键了，
+                        这种适合那种主键不是自增的类型
+            resultType 主键类型 -->
+		insert into tb_lstmModel(model_num,model_time,model_size)
+		values(#{modelNum},#{modelTime},#{modelSize})	
+        <selectKey keyProperty="modelId" order="AFTER" resultType="java.lang.Integer">
+            select @@IDENTITY
+        </selectKey>
+	</insert>
+	<!-- public void insertLSTMModelRecord(LSTMModelRecord record); -->
+	<insert id="insertLSTMModelRecord" parameterType="com.cc.pms.bean.LSTMModelRecord">
+		 insert into tb_lstmModelRecord(record_time,m_id)
+		 values(#{recordTime},#{mId})
+	</insert>
+	
+	<!-- public List<TreeModel> getAllTreeModel(); -->
+	<select id="getAllTreeModel" resultType="com.cc.pms.bean.TreeModel">
+		select * from tb_treeModel
+	</select>
+	
+	<!-- public List<TreeModel> getAllTreeModelByInput(String inputData); -->
+	<select id="getAllTreeModelByInput" resultType="com.cc.pms.bean.TreeModel">
+		select * from tb_treeModel mm
+		where concat(mm.treeModel_num,mm.treeModel_size) like '%${inputData}%'
+	</select>
+	
+	<!-- public List<LSTMModel> getAllTreeModelBySize(); -->
+	<select id="getAllTreeModelBySize" resultType="com.cc.pms.bean.TreeModel">
+		select * from tb_treeModel order by treeModel_size desc
+	</select>
+	
+	<!-- public List<LSTMModel> getAllTreeModelByLastUse(); -->
+	<select id="getAllTreeModelByLastUse" resultType="com.cc.pms.bean.TreeModel">
+		select mm.treeModel_id,mm.treeModel_num,mm.treeModel_size,mm.treeModel_star,mm.treeModel_time,t1.treeModel_lastTime
+		from 
+		(
+			select max(record_time) as treeModel_lastTime,m_id from tb_treeModelRecord group by m_id
+		) t1,tb_treeModel mm
+		where t1.m_id =mm.treeModel_id
+		order by t1.treeModel_lastTime desc
+	</select>
+	
+	<!-- public List<LSTMModel> getAllTreeModelByStar(); -->
+	<select id="getAllTreeModelByStar" resultType="com.cc.pms.bean.TreeModel">
+		select * from tb_treeModel order by treeModel_star desc 
+	</select>
+	
+	<!-- public int getLastModelId(); -->
+	<select id="getLastModelId" resultType="Integer">
+		select top 1 treeModel_id from tb_treeModel order by treeModel_id desc
+	</select>
+	
+	<!-- public List<LSTMModel> getAllLSTMModel(); -->
+	<select id="getAllLSTMModel" resultType="com.cc.pms.bean.LSTMModel">
+		select *
+		from tb_lstmModel m  
+	</select>
+	
+	<!-- public List<LSTMModel> getAllLSTMModelBySize(); -->
+	<select id="getAllLSTMModelBySize" resultType="com.cc.pms.bean.LSTMModel">
+		select * from tb_lstmModel order by model_size desc
+	</select>
+	
+	<!-- public List<LSTMModel> getAllLSTMModelByLastUse(); -->
+	<select id="getAllLSTMModelByLastUse" resultType="com.cc.pms.bean.LSTMModel">
+		select mm.model_id,mm.model_num,mm.model_size,mm.model_star,mm.model_time,t1.model_lastTime
+		from 
+		(
+			select max(record_time) as model_lastTime,m_id from tb_lstmModelRecord group by m_id
+		) t1,tb_lstmModel mm
+		where t1.m_id =mm.model_id
+		order by t1.model_lastTime desc
+	</select>
+	
+	<!-- public List<LSTMModel> getAllLSTMModelByStar(); -->
+	<select id="getAllLSTMModelByStar" resultType="com.cc.pms.bean.LSTMModel">
+		select * from tb_lstmModel order by model_star desc 
+	</select>
+	
+	<!-- public List<LSTMModelRecord> getAllLSTMModelRecord(Integer modelId); -->
+	<select id="getAllLSTMModelRecord" resultType="com.cc.pms.bean.LSTMModelRecord">
+		select * from tb_lstmModelRecord
+		where m_id=#{modelId}
+	</select>
+	
+	<!-- public List<TreeModelData> getAllProductTreeModelData();-->
+	<resultMap id="TMDMap" type="com.cc.pms.bean.TreeModelData">
+		<id column="product_id" jdbcType="INTEGER" property="pId" />
+		<result column="inbound_cost" jdbcType="FLOAT" property="inboundCost" />
+		<result column="inbound_size" jdbcType="INTEGER" property="inboundSize" />
+		<result column="inventory_size" jdbcType="INTEGER" property="inventorySize" />
+		<result column="sales_price" jdbcType="FLOAT" property="salesPrice" />
+		<result column="sales_size" jdbcType="INTEGER" property="salesSize" />
+	</resultMap>
+	<select id="getAllProductTreeModelData" resultMap="TMDMap">
+		select inbound_size from tb_inbound where product_id=86
+	</select>
+	
+	<!-- public List<TreeModelData> getOneProductTreeModelData(Integer productId); -->
+	<resultMap id="TMDMap2" type="com.cc.pms.bean.TreeModelData">
+		<id column="product_id" jdbcType="INTEGER" property="pId" />
+		<result column="inbound_cost" jdbcType="FLOAT" property="inboundCost" />
+		<result column="inbound_size" jdbcType="INTEGER" property="inboundSize" />
+		<result column="inventory_size" jdbcType="INTEGER" property="inventorySize" />
+		<result column="sales_price" jdbcType="FLOAT" property="salesPrice" />
+		<result column="sales_size" jdbcType="INTEGER" property="salesSize" />
+	</resultMap>
+	<select id="getOneProductTreeModelData" resultMap="TMDMap2">
+		select i.inbound_cost,i.inbound_size,n.inventory_size,s.sales_price,s.sales_size
+		from tb_inbound i
+		left join tb_inventory n
+		on i.product_id=n.product_id
+		left join tb_sales s
+		on i.product_id=s.p_id
+		where i.product_id=#{productId}
+	</select>
+	
+	
+	<!-- public TreeModel getDTModelById(Integer treeModelId);
+	public void updateDTModelById(TreeModel model); -->
+	<select id="getDTModelById" resultType="com.cc.pms.bean.TreeModel">
+		select *
+		from tb_treeModel
+		where treeModel_id=#{treeModelId}
+	</select>
+	<update id="updateDTModelById" >
+		update tb_treeModel
+		set model_size=model_size+1
+		where model_id=#{modelId} 
+	</update>
+	
+	
+	<!-- public void updateLSTMModelById(Integer modelId); -->
+	<update id="updateLSTMModelById" >
+		update tb_lstmModel
+		<set>
+            <if test="treeModelNum != null">treeModel_num=#{treeModelNum}</if>
+            <if test="treeModelPath != null">treeModel_path=#{treeModelPath}</if>
+            <if test="treeModelTime != null">treeModel_time=#{treeModelTime}</if>
+            <if test="treeModelSize != null">treeModel_size=#{treeModelSize}</if>
+            <if test="treeModelStar != null">treeModel_star=#{treeModelStar}</if>
+        </set>
+        where model_id=#{modelId} 
+	</update>
+	
+	<!-- public int updateDTModelStar(Integer treeModelId, Integer treeModelStar); -->
+	<update id="updateDTModelStar">
+		update tb_treeModel
+		<set>
+            <if test="#{param2} != null">treeModel_star=#{param2}</if>
+        </set>
+        where treeModel_id=#{param1} 
+	
+	</update>
+	
+	
+
+
+
+</mapper>

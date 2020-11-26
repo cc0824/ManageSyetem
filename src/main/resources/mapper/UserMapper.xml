@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.UserDao">
+
+	<!-- 可以实现将查询结果映射为复杂类型的实体类型 -->
+	<resultMap id="UserMap" type="com.cc.pms.bean.User">
+		<id column="user_id" jdbcType="INTEGER" property="userId" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="user_password" jdbcType="VARCHAR" property="userPassword" />
+	</resultMap>
+
+	<!-- 定义字段合集，方便后面引用 ,在refid标签里 -->
+	<sql id="userColumn">
+		user_id,user_name,user_password
+	</sql>
+
+	<!-- insert -->
+	<!-- 用户注册 -->
+	<insert id="addUser" parameterType="com.cc.pms.bean.User"  >
+		insert into tb_user(user_name,user_password)
+		values(#{userName},#{userPassword})
+	</insert>
+
+	<!-- select -->
+	<!-- 用户登陆 -->
+	<!-- mybatis配置类型别名，可以用User代替com.cc.pms.bean.User，resultType="User"但使用别名需要字段的别名做映射，别名是类里面的属性名 -->
+	<!-- 传入类型是map，#{}中内容是控制器里map的key名 -->
+	<select id="getUser" parameterType="map" resultMap="UserMap">
+		select * from tb_user
+		<where>
+<!-- 			<if test="user_name!=null and user_name!=''"> -->
+<!-- 				and user_name=#{userName} -->
+<!-- 			</if> -->
+<!-- 			<if test="user_password!=null and user_password!=''"> -->
+<!-- 				and user_password=#{userPassword} -->
+<!-- 			</if> -->
+                user_name=#{userName} 
+		</where>
+	</select>
+	
+	<!-- 通过用户名查询用户 -->
+	<select id="getByUserName" parameterType="String" resultMap="UserMap">
+		select * from tb_user where user_name=#{userName}
+	</select>
+	
+	<!-- 依据门店id查到包含的员工信息 -->
+	<select id="getEmpByStoreId" resultType="com.cc.pms.bean.User">
+		select * from tb_user where store_id=#{Id}
+	</select>
+	
+	<!-- 依据员工id把角色信息查询出来 -->
+<!-- 	<resultMap id="EmpWithRoleMap" type="com.cc.pms.bean.User"> -->
+<!-- 		<id column="user_id" property="userId" /> -->
+<!-- 		<result column="user_name"  property="userName" /> -->
+<!-- 		<association property="role"  -->
+<!-- 				select="com.cc.pms.dao.RoleDao.getRoleById" -->
+<!-- 				column="role_id"> -->
+<!-- 		</association> -->
+<!-- 	</resultMap> -->
+<!-- 	<select id="getUserWithRoleById" resultMap="EmpWithRoleMap"> -->
+<!-- 		SELECT * -->
+<!-- 		FROM tb_user  -->
+<!-- 		WHERE user_id=#{userId} -->
+<!-- 	</select> -->
+	
+	<!-- 用户展示界面 -->
+	<!-- 1.展示用户信息 -->
+	<select id="getAllUserList" resultMap="UserMap">
+		select * from tb_user
+	</select>
+	<!-- 2.展示角色信息 -->	
+	<resultMap id="UserWithRoleMap" type="com.cc.pms.bean.User">
+		<id column="user_id" property="userId" />
+		<result column="user_name"  property="userName" />
+		<collection property="roleList" ofType="com.cc.pms.bean.Role">
+			<!-- 定义集合中元素的封装规则 -->
+			<id column="role_id"  property="roleId" />
+			<result column="role_name"  property="roleName" />
+		</collection>
+	</resultMap>
+	<select id="getAllUserListWithRole" resultMap="UserWithRoleMap">
+		SELECT u.user_id,u.user_name,r.role_name
+		FROM tb_user u,tb_role r,tb_role_user ru
+		where u.user_id=ru.user_id and r.role_id=ru.role_id
+	</select>
+	
+	<!-- public User getSelectUserById(Integer id) -->
+	<select id="getSelectUserById" resultType="com.cc.pms.bean.User">
+		select * from tb_user where user_id=#{userId}
+	</select>
+	
+	<!-- 搜索 -->
+	<!-- public List<User> getDataBySearch(String searchData) -->
+	<select id="getDataBySearch" resultType="com.cc.pms.bean.User" parameterType="string">
+	 	select * from tb_user
+	 	where user_name like '%${searchData}%'
+	</select>
+	
+	<!-- public List<User> getIPBySearch(@Param("inputData")String inputData); -->
+	<select id="getIPBySearch" resultType="string">
+		select distinct log_ip from tb_log where log_ip like '%${inputData}%'
+	</select>
+	
+		
+		
+		
+		
+
+
+
+
+</mapper>

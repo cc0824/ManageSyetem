@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.ProductDao">
+
+	<!-- 可以实现将查询结果映射为复杂类型的实体类型-->
+	<resultMap id="ProductMap" type="com.cc.pms.bean.Product">
+		<id column="product_id" jdbcType="INTEGER" property="productId" />
+		<result column="product_name" jdbcType="VARCHAR" property="productName" />
+		<result column="product_cost" jdbcType="FLOAT" property="productCost" />
+		<result column="product_price" jdbcType="FLOAT" property="productPrice" />
+		<result column="product_area" jdbcType="VARCHAR" property="productArea" />
+	</resultMap>
+
+	<!-- 定义字段合集，方便后面引用 ,在refid标签里 -->
+	<sql id="productColumn">
+		product_id,product_name,product_cost,product_price,product_area
+	</sql>
+
+	<!-- insert -->
+	<!-- 添加商品信息 -->
+	<insert id="addProduct" parameterType="com.cc.pms.bean.Product"  >
+		insert into tb_product(product_name,product_cost,product_price,product_area)
+		values(#{productName},#{productCost},#{productPrice},#{productArea})
+	</insert>
+	
+	<!-- 搜索 -->
+	<!-- public List<Product> getDataBySearch(String searchData) -->
+	<select id="getDataBySearch" resultType="com.cc.pms.bean.Product" parameterType="string">
+	 	select * from tb_product
+	 	where concat(product_name,product_cost,product_price,product_area) like '%${searchData}%'
+	</select>
+
+	<!-- select -->
+	<!-- 通过商品名称查询商品信息 -->
+	<!-- 传入类型是map，#{}中内容是控制器里map的key名 -->
+	<select id="getProduct" parameterType="String" resultMap="ProductMap">
+		select * from tb_product
+		<where>
+        	product_name=#{productName} 
+		</where>
+	</select>
+	<!-- 展示所有商品信息 -->
+	<select id="getAllProduct" resultMap="ProductMap">
+		select * from tb_product
+	</select>
+	<!-- 依据id选择商品 --> 
+	<select id="getSelectProduct" resultMap="ProductMap">
+    	select * from tb_product
+    	<where>
+        	product_id=#{productId} 
+		</where>
+  	</select>
+  	
+  	<!-- 依据名称查询商品信息 -->
+  	<!-- public Product getProductIdByName(String productName); -->
+  	<select id="getProductIdByName" resultType="com.cc.pms.bean.Product">
+  		select product_id
+  		from tb_product
+  		where product_name=#{productName}
+  	</select>
+  	
+  	<!-- public Product getSelectProductWithSaleInf(Integer productId); -->
+	<resultMap type="com.cc.pms.bean.Product" id="ProductMap2">
+		<id column="product_id" jdbcType="INTEGER" property="productId" />
+		<result column="product_name" jdbcType="VARCHAR" property="productName" />
+		<result column="product_cost" jdbcType="FLOAT" property="productCost" />
+		<result column="product_price" jdbcType="FLOAT" property="productPrice" />
+		<result column="product_area" jdbcType="VARCHAR" property="productArea" />
+		<collection property="saleInfs" ofType="com.cc.pms.bean.SaleInf" >
+			<id column="sales_id" jdbcType="INTEGER" property="salesId" />
+			<result column="sales_size" jdbcType="INTEGER" property="salesSize" />
+			<result column="sales_time" jdbcType="DATE" property="salesTime" />
+			<result column="sales_num" jdbcType="INTEGER" property="salesNum" />
+			<result column="sales_price" jdbcType="FLOAT" property="salesPrice" />
+			<result column="p_id" jdbcType="INTEGER" property="pId" />
+        </collection>
+	</resultMap>
+	<select id="getSelectProductWithSaleInf"  resultMap="ProductMap2">
+		select p.*,s.*
+		from tb_product p
+		left join tb_sales s
+		on p.product_id=s.p_id
+		where p.product_id=#{productId}
+	</select>
+	
+  	
+	
+	<!--update -->
+	<!-- 修改商品信息 -->
+
+	<update id="updateSelectProduct" parameterType="com.cc.pms.bean.Product">
+		update tb_product
+		<set>
+			<if test="productName!=null and productName!=''">
+				product_name=#{productName},
+			</if>
+			<if test="productCost!=null and productCost!=''">
+				product_cost=#{productCost},
+			</if>
+			<if test="productPrice!=null and productPrice!=''">
+				product_price=#{productPrice},
+			</if>
+			<if test="productArea!=null and productArea!=''">
+				product_area=#{productArea},
+			</if>			
+		</set>
+		where product_id=#{productId} 
+	</update>
+ 
+	
+			
+	<!-- delete -->
+	<!-- 删除商品信息 -->
+	<delete id="deleteProduct" parameterType="String"> 
+		delete from tb_product
+		where product_name=#{productName}    
+	</delete>
+	<!-- 单个删除 -->
+	<delete id="deleteProductById" parameterType="Integer"> 
+		delete from tb_product
+		where product_id=#{productId}
+        
+	</delete>
+	<!-- 批量删除 --> 
+	<delete id="deleteProductByIds" parameterType="java.lang.String" >
+    	delete from tb_product 
+		where product_id in
+        <foreach item="productIds" collection="list" index="no" open="(" separator="," close=")">
+        	#{productIds}
+        </foreach> 
+
+  	</delete>
+
+	
+
+
+
+
+</mapper>

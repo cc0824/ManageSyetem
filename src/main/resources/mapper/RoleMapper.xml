@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.pms.dao.RoleDao">
+
+
+	
+	<!-- 依据用户id查询角色id -->
+	<!-- public Role getRoleById(Integer id); -->
+	<select id="getRoleByUserId" resultType="com.cc.pms.bean.Role">
+		select r.role_id,r.role_name 
+		from tb_role r,tb_user u,tb_role_user ru
+		where u.user_id=ru.user_id and ru.role_id=r.role_id and u.user_id=#{id}
+	</select>
+	
+	<!-- 依据角色id查询角色菜单id -->
+	<!-- public Role getRoleByRoleId(Integer id); -->
+	<select id="getRoleById" resultMap="roleMap" parameterType="Integer">
+		select * 
+		from tb_role r
+		where role_id=#{id}
+	</select>
+	<!-- 定义封装规则 -->
+	<resultMap id="roleMap" type="com.cc.pms.bean.Role">
+		<id column="role_id" jdbcType="INTEGER" property="roleId" />
+		<result column="role_name" jdbcType="VARCHAR" property="roleName" />
+		<collection property="menuList" ofType="com.cc.pms.bean.Menu">
+			<id column="menu_id" jdbcType="INTEGER" property="menuId" />
+			<result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+			<result column="menu_icon" jdbcType="VARCHAR" property="menuIcon" />
+			<result column="menu_state" jdbcType="INTEGER" property="menuState" />
+			<result column="p_id" jdbcType="INTEGER" property="pId" />
+			<result column="menu_url" jdbcType="VARCHAR" property="menuUrl" />
+		</collection>
+	</resultMap>
+	
+	<!-- public List<Role> getAllRole(); -->
+	<select id="getAllRole" resultType="com.cc.pms.bean.Role">
+		select role_name,role_id from tb_role
+	</select>
+	
+	<!-- public List<Role> getAllRoleWithMenu() -->
+	<select id="getAllRoleWithMenu" resultMap="roleWithMenuMap">
+		select r.role_id,r.role_name,m.menu_id,m.menu_name,m.menu_url 
+		from tb_role r
+		left join tb_menu_role mr
+		on r.role_id=mr.role_id
+		left join tb_menu m
+		on m.menu_id=mr.menu_id
+	</select>
+	<resultMap id="roleWithMenuMap" type="com.cc.pms.bean.Role">
+		<id column="role_id" jdbcType="INTEGER" property="roleId" />
+		<result column="role_name" jdbcType="VARCHAR" property="roleName" />
+		<collection property="menuList" ofType="com.cc.pms.bean.Menu">
+			<id column="menu_id" jdbcType="INTEGER" property="menuId" />
+			<result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+			<result column="menu_icon" jdbcType="VARCHAR" property="menuIcon" />
+			<result column="menu_state" jdbcType="INTEGER" property="menuState" />
+			<result column="p_id" jdbcType="INTEGER" property="pId" />
+			<result column="menu_url" jdbcType="VARCHAR" property="menuUrl" />
+		</collection>
+	</resultMap>
+	
+
+
+
+</mapper>

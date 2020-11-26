@@ -1,0 +1,537 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cc</groupId>
+	<artifactId>SSM-PMS</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>SSM-PMS Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<!-- <version>${spring.version}</version> -->
+		<spring.version>4.1.7.RELEASE</spring.version>
+	</properties>
+	<dependencies>
+		<!-- Spring相关包 ,版本必须一致 -->
+		<!-- SpringMVC、Spring -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>4.1.7.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>4.1.7.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>4.1.7.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>4.1.7.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>4.1.7.RELEASE</version>
+		</dependency>
+		<!-- Spring-Jdbc -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>4.1.7.RELEASE</version>
+		</dependency>
+		<!-- Spring面向切面编程 -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-aspects -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>4.1.7.RELEASE</version>
+		</dependency>
+		<!-- spring websocket -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-websocket</artifactId>
+		    <version>4.1.7.RELEASE</version>
+		</dependency>
+		<!-- spring messaging -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-messaging</artifactId>
+		    <version>4.1.7.RELEASE</version>
+		</dependency>
+		
+		
+		<!-- elasticsearch -->
+		<!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>org.elasticsearch</groupId> -->
+<!-- 		    <artifactId>elasticsearch</artifactId> -->
+<!-- 		    <version>7.2.0</version> -->
+<!-- 		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>org.springframework.data</groupId> -->
+<!-- 		    <artifactId>spring-data-elasticsearch</artifactId> -->
+<!-- 		    <version>3.1.9.RELEASE</version> -->
+<!-- 		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-commons -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>org.springframework.data</groupId> -->
+<!-- 		    <artifactId>spring-data-commons</artifactId> -->
+<!-- 		    <version>2.2.3.RELEASE</version> -->
+<!-- 		</dependency> -->
+		
+		
+		
+		<!-- AOP相关包 -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+
+
+		<!-- MyBatis相关包 -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.4.2</version>
+		</dependency>
+		<!-- MyBatis整合Spring适配包 -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<!-- MyBatisGenerator 利用mybatis生成逆向工程 -->
+		<!-- https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-core -->
+		<dependency>
+			<groupId>org.mybatis.generator</groupId>
+			<artifactId>mybatis-generator-core</artifactId>
+			<version>1.3.5</version>
+		</dependency>
+		<!-- java8的LocalDate类mybatis不支持，加这个jar包转化 -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-typehandlers-jsr310</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.2.4.Final</version>
+		</dependency>
+
+
+		<!-- 导入sqlserver数据库连接jar包 -->
+		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>6.4.0.jre8</version>
+		</dependency>
+		<!-- 之前版本的sqljdbc依赖需要手动添加 -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.microsoft.sqlserver</groupId> -->
+		<!-- <artifactId>sqljdbc4</artifactId> -->
+		<!-- <version>4.2</version> -->
+		<!-- </dependency> -->
+		<!-- 数据库连接池 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.0.16</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/c3p0/c3p0 -->
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
+		</dependency>
+
+
+		<!-- （jstl，servlet-api，junit） -->
+		<!-- JSP标准标签库-JSTL -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.servlet.jsp.jstl/jstl-api -->
+		<dependency>
+			<groupId>javax.servlet.jsp.jstl</groupId>
+			<artifactId>jstl-api</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<!-- servlet-api 在服务器中有,但开发中不引用会被报错,所以添加scope标签 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+
+		<!-- 日志相关包 -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>1.7.24</version>
+		</dependency>
+
+
+		<!-- 单元测试相关包 -->
+		<!-- junit-test -->
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+		<!--Spring-test -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>4.1.7.RELEASE</version>
+		</dependency>
+
+
+		<!-- 引入pagehelper插件 -->
+		<dependency>
+			<groupId>com.github.pagehelper</groupId>
+			<artifactId>pagehelper</artifactId>
+			<version>5.0.3</version>
+		</dependency>
+
+
+		<!-- 使用JSON需要的包 -->
+		<!-- https://mvnrepository.com/artifact/net.sf.json-lib/json-lib -->
+		<dependency>
+		    <groupId>net.sf.json-lib</groupId>
+		    <artifactId>json-lib</artifactId>
+		    <version>2.3</version>
+		    <classifier>jdk15</classifier>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.sf.ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+			<version>1.0.6</version>
+		</dependency>
+		<!-- jakson依赖包，社区十分活跃且更新速度很快 -->
+		<!-- jackson-databind默认依赖jackson-core jackson-annotations -->
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>2.8.7</version>
+		    <exclusions>
+		    	<exclusion>
+		          	<groupId>com.fasterxml.jackson.core</groupId>
+		          	<artifactId>jackson-annotations</artifactId>
+		        </exclusion>
+	        </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-annotations</artifactId>
+		    <version>2.8.7</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>com.fasterxml.jackson.core</groupId> -->
+<!-- 		    <artifactId>jackson-annotations</artifactId> -->
+<!-- 		    <version>2.6.6</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!--             <groupId>com.fasterxml.jackson.module</groupId> -->
+<!--             <artifactId>jackson-module-scala_2.11</artifactId> -->
+<!--             <version>2.6.6</version> -->
+<!--         </dependency> -->
+		
+		
+		<dependency>
+	      	<groupId>org.codehaus.jackson</groupId>
+	      	<artifactId>jackson-mapper-asl</artifactId>
+	      	<version>1.9.13</version>
+	    </dependency>
+	    <!-- alibaba阿里巴巴开发的 JSON 库 ，性能十分优秀-->
+	    <dependency>
+		    <groupId>com.alibaba</groupId>
+		    <artifactId>fastjson</artifactId>
+		    <version>1.2.47</version>
+		</dependency>
+		<!-- 谷歌开发的 JSON 库，功能十分全面 -->
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		    <version>2.8.5</version>
+		</dependency>
+		
+		
+
+
+		<!-- apache公共包 -->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>2.4.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+
+		<!-- 添加shiro支持 -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+
+
+		<!-- 别的 -->
+		<!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.18.1-GA</version>
+		</dependency>
+		
+		<!-- spark mllib相关包 -->
+		<!-- spark-mllib -->
+	  	<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-mllib -->
+		<dependency>
+		    <groupId>org.apache.spark</groupId>
+		    <artifactId>spark-mllib_2.12</artifactId>
+		    <version>2.4.3</version>
+	<!-- 	    <scope>runtime</scope> -->
+		</dependency>
+		<!-- spark-sql -->
+		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+		<dependency>
+		    <groupId>org.apache.spark</groupId>
+		    <artifactId>spark-sql_2.12</artifactId>
+		    <version>2.4.3</version>
+		    <exclusions>
+	            <exclusion>
+	                <groupId>com.fasterxml.jackson.core</groupId>
+	                <artifactId>jackson-databind</artifactId>
+	            </exclusion>
+	            <exclusion>
+		          	<groupId>com.fasterxml.jackson.core</groupId>
+		          	<artifactId>jackson-core</artifactId>
+		        </exclusion>
+	            <exclusion>
+		          	<groupId>com.fasterxml.jackson.core</groupId>
+		          	<artifactId>jackson-annotations</artifactId>
+		        </exclusion>
+	        </exclusions>
+		</dependency>
+		<!--  -->
+		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
+		<dependency>
+		    <groupId>org.apache.spark</groupId>
+		    <artifactId>spark-core_2.12</artifactId>
+		    <version>2.4.3</version>
+		    <exclusions>
+	            <exclusion>
+	                <groupId>org.apache.hadoop</groupId>
+		    		<artifactId>hadoop-client</artifactId>
+	            </exclusion>
+	            <exclusion>
+	                <groupId>com.fasterxml.jackson.core</groupId>
+	                <artifactId>jackson-databind</artifactId>
+	            </exclusion>
+	            <exclusion>
+		          	<groupId>com.fasterxml.jackson.core</groupId>
+		          	<artifactId>jackson-core</artifactId>
+		        </exclusion>
+	            <exclusion>
+		          	<groupId>com.fasterxml.jackson.core</groupId>
+		          	<artifactId>jackson-annotations</artifactId>
+		        </exclusion>
+	            <exclusion>
+		          	<groupId>com.fasterxml.jackson.module</groupId>
+		          	<artifactId>*</artifactId>
+		        </exclusion>
+	        </exclusions>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-scala -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.module</groupId>
+		    <artifactId>jackson-module-scala_2.12</artifactId>
+		    <version>2.8.7</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<groupId>com.fasterxml.jackson.module</groupId>
+            		<artifactId>jackson-module-paranamer</artifactId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-paranamer</artifactId>
+            <version>2.8.7</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming -->
+		<dependency>
+		    <groupId>org.apache.spark</groupId>
+		    <artifactId>spark-streaming_2.12</artifactId>
+		    <version>2.4.3</version>
+	<!-- 	    <scope>provided</scope> -->
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-client -->
+		<dependency>
+		    <groupId>org.apache.hadoop</groupId>
+		    <artifactId>hadoop-client</artifactId>
+		    <version>2.7.3</version>
+		</dependency>
+		
+		
+		
+		<!-- stockpredict相关 -->
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20180813</version>
+		</dependency>
+        <!-- DL4J and ND4J Related Dependencies -->
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-api</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-native</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-core</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.datavec</groupId>
+            <artifactId>datavec-api</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.datavec</groupId>
+            <artifactId>datavec-dataframe</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <!-- OpenCSV Dependency -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>3.9</version>
+        </dependency>
+        <!-- Guava dependency -->
+<!--         <dependency> -->
+<!--             <groupId>com.google.guava</groupId> -->
+<!--             <artifactId>guava</artifactId> -->
+<!--             <version>23.0</version> -->
+<!--         </dependency> -->
+         <dependency>
+    		<groupId>org.jfree</groupId>
+    		<artifactId>jfreechart</artifactId>
+    		<version>1.0.19</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<finalName>SSM-PMS</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins> 
+	</build>
+
+</project>
